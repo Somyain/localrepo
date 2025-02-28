@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Investor Bidding Platform</title>
+    <title>Investor Bidding Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -38,8 +38,16 @@
             cursor: pointer;
         }
 
-        .bid-list {
+        .dashboard {
             margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .dashboard h2 {
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -48,9 +56,19 @@
     <div class="container">
         <h1>Investor Bidding Platform</h1>
         <div id="pitchers"></div>
-        <div class="bid-list">
-            <h2>Live Bids</h2>
-            <ul id="bids"></ul>
+        <div class="dashboard">
+            <h2>Bid Dashboard</h2>
+            <table border="1" width="100%">
+                <thead>
+                    <tr>
+                        <th>Investor</th>
+                        <th>Bid Amount</th>
+                        <th>Pitcher</th>
+                    </tr>
+                </thead>
+                <tbody id="bid-table">
+                </tbody>
+            </table>
         </div>
     </div>
     <script>
@@ -60,7 +78,8 @@
         ];
 
         const pitchersContainer = document.getElementById("pitchers");
-        const bidsList = document.getElementById("bids");
+        const bidTable = document.getElementById("bid-table");
+        let bids = [];
 
         function renderPitchers() {
             pitchers.forEach(pitcher => {
@@ -84,9 +103,17 @@
             if (!investor || !amount) return;
 
             const pitcher = pitchers.find(p => p.id === pitcherId);
-            const bidItem = document.createElement("li");
-            bidItem.textContent = `${investor} bid $${amount} on ${pitcher.name}`;
-            bidsList.appendChild(bidItem);
+            bids.push({ investor, amount, pitcher: pitcher.name });
+            renderBids();
+        }
+
+        function renderBids() {
+            bidTable.innerHTML = "";
+            bids.forEach(bid => {
+                const row = document.createElement("tr");
+                row.innerHTML = `<td>${bid.investor}</td><td>$${bid.amount}</td><td>${bid.pitcher}</td>`;
+                bidTable.appendChild(row);
+            });
         }
 
         renderPitchers();
