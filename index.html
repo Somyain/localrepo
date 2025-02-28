@@ -28,34 +28,6 @@
             color: #333;
         }
 
-        .card {
-            border: 1px solid #ddd;
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            background: #fff;
-        }
-
-        .input-field,
-        .button {
-            display: block;
-            width: 100%;
-            margin-top: 10px;
-            padding: 10px;
-        }
-
-        .button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        .button:hover {
-            background-color: #0056b3;
-        }
-
         .dashboard {
             margin-top: 20px;
             padding: 15px;
@@ -87,7 +59,6 @@
 <body>
     <div class="container">
         <h1>Investor Bidding Platform</h1>
-        <p style="text-align: center;">A platform where investors bid on innovative ideas presented by pitchers.</p>
         <div id="setup">
             <h2>Register Investors</h2>
             <table>
@@ -99,8 +70,7 @@
                 </thead>
                 <tbody id="investor-table"></tbody>
             </table>
-            <button class="button" onclick="addInvestorRow()">Add Investor</button>
-
+            <button onclick="addInvestorRow()">Add Investor</button>
             <h2>Register Pitchers</h2>
             <table>
                 <thead>
@@ -111,15 +81,15 @@
                 </thead>
                 <tbody id="pitcher-table"></tbody>
             </table>
-            <button class="button" onclick="addPitcherRow()">Add Pitcher</button>
-            <button class="button" onclick="startBidding()">Start Bidding</button>
+            <button onclick="addPitcherRow()">Add Pitcher</button>
+            <button onclick="startBidding()">Start Bidding</button>
         </div>
         <div id="bidding-section" style="display: none;">
             <h2>Place Bids</h2>
             <select id="investor-select"></select>
             <select id="pitcher-select"></select>
-            <input type="number" id="bid-amount" class="input-field" placeholder="Enter Bid Amount">
-            <button class="button" onclick="placeBid()">Place Bid</button>
+            <input type="number" id="bid-amount" placeholder="Enter Bid Amount">
+            <button onclick="placeBid()">Place Bid</button>
             <div class="dashboard">
                 <h2>Live Bidding Dashboard</h2>
                 <table>
@@ -132,30 +102,21 @@
                     </thead>
                     <tbody id="bid-table"></tbody>
                 </table>
-                <canvas id="bidChart"></canvas>
             </div>
         </div>
     </div>
     <script>
-        let pitchers = [];
-        let bids = [];
-        let investors = [];
+        let investors = [], pitchers = [], bids = [];
 
         function addInvestorRow() {
             const row = document.createElement("tr");
-            row.innerHTML = `
-                <td><input type="text" class="input-field investor-name" placeholder="Enter Investor Name"></td>
-                <td><button class="button" onclick="removeRow(this)">Remove</button></td>
-            `;
+            row.innerHTML = `<td><input type="text" class="investor-name"></td><td><button onclick="removeRow(this)">Remove</button></td>`;
             document.getElementById("investor-table").appendChild(row);
         }
 
         function addPitcherRow() {
             const row = document.createElement("tr");
-            row.innerHTML = `
-                <td><input type="text" class="input-field pitcher-name" placeholder="Enter Pitcher Name"></td>
-                <td><button class="button" onclick="removeRow(this)">Remove</button></td>
-            `;
+            row.innerHTML = `<td><input type="text" class="pitcher-name"></td><td><button onclick="removeRow(this)">Remove</button></td>`;
             document.getElementById("pitcher-table").appendChild(row);
         }
 
@@ -164,41 +125,23 @@
         }
 
         function startBidding() {
-            investors = [];
-            pitchers = [];
-            document.querySelectorAll(".investor-name").forEach(input => {
-                if (input.value) investors.push(input.value);
-            });
-            document.querySelectorAll(".pitcher-name").forEach(input => {
-                if (input.value) pitchers.push(input.value);
-            });
-
-            if (investors.length === 0 || pitchers.length === 0) {
-                alert("Please enter at least one Investor and Pitcher name.");
-                return;
-            }
-
+            document.querySelectorAll(".investor-name").forEach(input => investors.push(input.value));
+            document.querySelectorAll(".pitcher-name").forEach(input => pitchers.push(input.value));
+            if (!investors.length || !pitchers.length) return alert("Enter at least one Investor and Pitcher.");
             document.getElementById("setup").style.display = "none";
             document.getElementById("bidding-section").style.display = "block";
-
-            const investorSelect = document.getElementById("investor-select");
-            const pitcherSelect = document.getElementById("pitcher-select");
-            investorSelect.innerHTML = investors.map(name => `<option>${name}</option>`).join('');
-            pitcherSelect.innerHTML = pitchers.map(name => `<option>${name}</option>`).join('');
+            document.getElementById("investor-select").innerHTML = investors.map(i => `<option>${i}</option>`).join('');
+            document.getElementById("pitcher-select").innerHTML = pitchers.map(p => `<option>${p}</option>`).join('');
         }
 
         function placeBid() {
             const investor = document.getElementById("investor-select").value;
             const pitcher = document.getElementById("pitcher-select").value;
-            const amount = document.getElementById("bid-amount").value;
-
-            if (!amount || amount <= 0) {
-                alert("Please enter a valid bid amount.");
-                return;
-            }
-
-            const row = `<tr><td>${investor}</td><td>$${amount}</td><td>${pitcher}</td></tr>`;
-            document.getElementById("bid-table").innerHTML += row;
+            const amount = Number(document.getElementById("bid-amount").value);
+            if (!amount || amount <= 0) return alert("Enter a valid bid amount.");
+            bids.push({ investor, amount, pitcher });
+            bids.sort((a, b) => b.amount - a.amount);
+            document.getElementById("bid-table").innerHTML = bids.map(b => `<tr><td>${b.investor}</td><td>$${b.amount}</td><td>${b.pitcher}</td></tr>`).join('');
         }
     </script>
 </body>
