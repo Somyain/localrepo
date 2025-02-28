@@ -10,11 +10,22 @@
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
+            background-color: #f4f4f4;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            color: #333;
         }
 
         .card {
@@ -22,6 +33,7 @@
             padding: 15px;
             margin-bottom: 15px;
             border-radius: 5px;
+            background: #fff;
         }
 
         .input-field,
@@ -33,22 +45,41 @@
         }
 
         .button {
-            background-color: blue;
+            background-color: #007bff;
             color: white;
             border: none;
             cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
         }
 
         .dashboard {
             margin-top: 20px;
             padding: 15px;
-            border: 1px solid #ddd;
             border-radius: 5px;
-            background-color: #f9f9f9;
+            background-color: #e9ecef;
         }
 
-        .dashboard h2 {
-            margin-bottom: 10px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
         }
     </style>
 </head>
@@ -56,30 +87,29 @@
 <body>
     <div class="container">
         <h1>Investor Bidding Platform</h1>
+        <p style="text-align: center;">A platform where investors bid on innovative ideas presented by pitchers.</p>
         <div id="setup">
-            <h2>Investors</h2>
-            <table border="1" width="100%">
+            <h2>Register Investors</h2>
+            <table>
                 <thead>
                     <tr>
                         <th>Investor Name</th>
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody id="investor-table">
-                </tbody>
+                <tbody id="investor-table"></tbody>
             </table>
             <button class="button" onclick="addInvestorRow()">Add Investor</button>
 
-            <h2>Pitchers</h2>
-            <table border="1" width="100%">
+            <h2>Register Pitchers</h2>
+            <table>
                 <thead>
                     <tr>
                         <th>Pitcher Name</th>
                         <th>Action</th>
                     </tr>
                 </thead>
-                <tbody id="pitcher-table">
-                </tbody>
+                <tbody id="pitcher-table"></tbody>
             </table>
             <button class="button" onclick="addPitcherRow()">Add Pitcher</button>
             <button class="button" onclick="startBidding()">Start Bidding</button>
@@ -87,8 +117,8 @@
         <div id="bidding-section" style="display: none;">
             <div id="pitchers"></div>
             <div class="dashboard">
-                <h2>Bid Dashboard</h2>
-                <table border="1" width="100%">
+                <h2>Live Bidding Dashboard</h2>
+                <table>
                     <thead>
                         <tr>
                             <th>Investor</th>
@@ -96,8 +126,7 @@
                             <th>Pitcher</th>
                         </tr>
                     </thead>
-                    <tbody id="bid-table">
-                    </tbody>
+                    <tbody id="bid-table"></tbody>
                 </table>
                 <canvas id="bidChart"></canvas>
             </div>
@@ -152,42 +181,6 @@
             document.getElementById("setup").style.display = "none";
             document.getElementById("bidding-section").style.display = "block";
             renderPitchers();
-        }
-
-        function renderPitchers() {
-            pitchersContainer.innerHTML = "";
-            pitchers.forEach(pitcher => {
-                const card = document.createElement("div");
-                card.className = "card";
-                card.innerHTML = `
-                    <h2>${pitcher.name}</h2>
-                    <p>${pitcher.idea}</p>
-                    <input class="input-field" type="number" placeholder="Bid Amount" id="amount-${pitcher.id}">
-                    <button class="button" onclick="placeBid(${pitcher.id})">Place Bid</button>
-                `;
-                pitchersContainer.appendChild(card);
-            });
-        }
-
-        function placeBid(pitcherId) {
-            const amount = parseFloat(document.getElementById(`amount-${pitcherId}`).value);
-            if (isNaN(amount) || amount <= 0) return;
-
-            const investor = investors[bids.length % investors.length];
-            const pitcher = pitchers.find(p => p.id === pitcherId);
-            bids.push({ investor, amount, pitcher: pitcher.name });
-            renderBids();
-        }
-
-        function renderBids() {
-            bidTable.innerHTML = "";
-            bids.sort((a, b) => b.amount - a.amount);
-            bids.forEach(bid => {
-                const row = document.createElement("tr");
-                row.innerHTML = `<td>${bid.investor}</td><td>$${bid.amount}</td><td>${bid.pitcher}</td>`;
-                bidTable.appendChild(row);
-            });
-            updateChart();
         }
     </script>
 </body>
