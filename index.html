@@ -1,2 +1,96 @@
-<p> this is a new repo</p>
-<p> This is a new feature (dropdown)</p>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investor Bidding Platform</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+
+        .input-field,
+        .button {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+        }
+
+        .button {
+            background-color: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        .bid-list {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Investor Bidding Platform</h1>
+        <div id="pitchers"></div>
+        <div class="bid-list">
+            <h2>Live Bids</h2>
+            <ul id="bids"></ul>
+        </div>
+    </div>
+    <script>
+        const pitchers = [
+            { id: 1, name: "John Doe", idea: "AI-Powered Finance App" },
+            { id: 2, name: "Jane Smith", idea: "Green Energy Startup" }
+        ];
+
+        const pitchersContainer = document.getElementById("pitchers");
+        const bidsList = document.getElementById("bids");
+
+        function renderPitchers() {
+            pitchers.forEach(pitcher => {
+                const card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `
+                    <h2>${pitcher.name}</h2>
+                    <p>${pitcher.idea}</p>
+                    <input class="input-field" type="text" placeholder="Investor Name" id="investor-${pitcher.id}">
+                    <input class="input-field" type="number" placeholder="Bid Amount" id="amount-${pitcher.id}">
+                    <button class="button" onclick="placeBid(${pitcher.id})">Place Bid</button>
+                `;
+                pitchersContainer.appendChild(card);
+            });
+        }
+
+        function placeBid(pitcherId) {
+            const investor = document.getElementById(`investor-${pitcherId}`).value;
+            const amount = document.getElementById(`amount-${pitcherId}`).value;
+
+            if (!investor || !amount) return;
+
+            const pitcher = pitchers.find(p => p.id === pitcherId);
+            const bidItem = document.createElement("li");
+            bidItem.textContent = `${investor} bid $${amount} on ${pitcher.name}`;
+            bidsList.appendChild(bidItem);
+        }
+
+        renderPitchers();
+    </script>
+</body>
+
+</html>
