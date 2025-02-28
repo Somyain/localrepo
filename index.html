@@ -115,7 +115,11 @@
             <button class="button" onclick="startBidding()">Start Bidding</button>
         </div>
         <div id="bidding-section" style="display: none;">
-            <div id="pitchers"></div>
+            <h2>Place Bids</h2>
+            <select id="investor-select"></select>
+            <select id="pitcher-select"></select>
+            <input type="number" id="bid-amount" class="input-field" placeholder="Enter Bid Amount">
+            <button class="button" onclick="placeBid()">Place Bid</button>
             <div class="dashboard">
                 <h2>Live Bidding Dashboard</h2>
                 <table>
@@ -136,10 +140,6 @@
         let pitchers = [];
         let bids = [];
         let investors = [];
-        const pitchersContainer = document.getElementById("pitchers");
-        const bidTable = document.getElementById("bid-table");
-        const investorTable = document.getElementById("investor-table");
-        const pitcherTable = document.getElementById("pitcher-table");
 
         function addInvestorRow() {
             const row = document.createElement("tr");
@@ -147,7 +147,7 @@
                 <td><input type="text" class="input-field investor-name" placeholder="Enter Investor Name"></td>
                 <td><button class="button" onclick="removeRow(this)">Remove</button></td>
             `;
-            investorTable.appendChild(row);
+            document.getElementById("investor-table").appendChild(row);
         }
 
         function addPitcherRow() {
@@ -156,7 +156,7 @@
                 <td><input type="text" class="input-field pitcher-name" placeholder="Enter Pitcher Name"></td>
                 <td><button class="button" onclick="removeRow(this)">Remove</button></td>
             `;
-            pitcherTable.appendChild(row);
+            document.getElementById("pitcher-table").appendChild(row);
         }
 
         function removeRow(button) {
@@ -170,7 +170,7 @@
                 if (input.value) investors.push(input.value);
             });
             document.querySelectorAll(".pitcher-name").forEach(input => {
-                if (input.value) pitchers.push({ id: pitchers.length + 1, name: input.value, idea: "Business Idea" });
+                if (input.value) pitchers.push(input.value);
             });
 
             if (investors.length === 0 || pitchers.length === 0) {
@@ -180,7 +180,25 @@
 
             document.getElementById("setup").style.display = "none";
             document.getElementById("bidding-section").style.display = "block";
-            renderPitchers();
+
+            const investorSelect = document.getElementById("investor-select");
+            const pitcherSelect = document.getElementById("pitcher-select");
+            investorSelect.innerHTML = investors.map(name => `<option>${name}</option>`).join('');
+            pitcherSelect.innerHTML = pitchers.map(name => `<option>${name}</option>`).join('');
+        }
+
+        function placeBid() {
+            const investor = document.getElementById("investor-select").value;
+            const pitcher = document.getElementById("pitcher-select").value;
+            const amount = document.getElementById("bid-amount").value;
+
+            if (!amount || amount <= 0) {
+                alert("Please enter a valid bid amount.");
+                return;
+            }
+
+            const row = `<tr><td>${investor}</td><td>$${amount}</td><td>${pitcher}</td></tr>`;
+            document.getElementById("bid-table").innerHTML += row;
         }
     </script>
 </body>
