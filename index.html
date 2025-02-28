@@ -55,52 +55,68 @@
 <body>
     <div class="container">
         <h1>Investor Bidding Platform</h1>
-        <div id="pitchers"></div>
-        <div class="dashboard">
-            <h2>Bid Dashboard</h2>
-            <table border="1" width="100%">
-                <thead>
-                    <tr>
-                        <th>Investor</th>
-                        <th>Bid Amount</th>
-                        <th>Pitcher</th>
-                    </tr>
-                </thead>
-                <tbody id="bid-table">
-                </tbody>
-            </table>
+        <div id="setup">
+            <input class="input-field" type="text" placeholder="Enter Investor Name" id="investor-name">
+            <input class="input-field" type="text" placeholder="Enter Pitcher Name" id="pitcher-name">
+            <button class="button" onclick="startBidding()">Start Bidding</button>
+        </div>
+        <div id="bidding-section" style="display: none;">
+            <div id="pitchers"></div>
+            <div class="dashboard">
+                <h2>Bid Dashboard</h2>
+                <table border="1" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Investor</th>
+                            <th>Bid Amount</th>
+                            <th>Pitcher</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bid-table">
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
     <script>
-        const pitchers = [
-            { id: 1, name: "John Doe", idea: "AI-Powered Finance App" },
-            { id: 2, name: "Jane Smith", idea: "Green Energy Startup" }
-        ];
-
+        let pitchers = [];
+        let bids = [];
         const pitchersContainer = document.getElementById("pitchers");
         const bidTable = document.getElementById("bid-table");
-        let bids = [];
 
-        function renderPitchers() {
+        function startBidding() {
+            const investorName = document.getElementById("investor-name").value;
+            const pitcherName = document.getElementById("pitcher-name").value;
+
+            if (!investorName || !pitcherName) {
+                alert("Please enter both Investor and Pitcher names.");
+                return;
+            }
+
+            pitchers = [{ id: 1, name: pitcherName, idea: "Business Idea" }];
+            document.getElementById("setup").style.display = "none";
+            document.getElementById("bidding-section").style.display = "block";
+            renderPitchers(investorName);
+        }
+
+        function renderPitchers(investorName) {
+            pitchersContainer.innerHTML = "";
             pitchers.forEach(pitcher => {
                 const card = document.createElement("div");
                 card.className = "card";
                 card.innerHTML = `
                     <h2>${pitcher.name}</h2>
                     <p>${pitcher.idea}</p>
-                    <input class="input-field" type="text" placeholder="Investor Name" id="investor-${pitcher.id}">
                     <input class="input-field" type="number" placeholder="Bid Amount" id="amount-${pitcher.id}">
-                    <button class="button" onclick="placeBid(${pitcher.id})">Place Bid</button>
+                    <button class="button" onclick="placeBid('${investorName}', ${pitcher.id})">Place Bid</button>
                 `;
                 pitchersContainer.appendChild(card);
             });
         }
 
-        function placeBid(pitcherId) {
-            const investor = document.getElementById(`investor-${pitcherId}`).value;
-            const amount = document.getElementById(`amount-${pitcherId}`).value;
-
-            if (!investor || !amount) return;
+        function placeBid(investor, pitcherId) {
+            const amount = parseFloat(document.getElementById(`amount-${pitcherId}`).value);
+            if (isNaN(amount) || amount <= 0) return;
 
             const pitcher = pitchers.find(p => p.id === pitcherId);
             bids.push({ investor, amount, pitcher: pitcher.name });
@@ -109,14 +125,13 @@
 
         function renderBids() {
             bidTable.innerHTML = "";
+            bids.sort((a, b) => b.amount - a.amount);
             bids.forEach(bid => {
                 const row = document.createElement("tr");
                 row.innerHTML = `<td>${bid.investor}</td><td>$${bid.amount}</td><td>${bid.pitcher}</td>`;
                 bidTable.appendChild(row);
             });
         }
-
-        renderPitchers();
     </script>
 </body>
 
